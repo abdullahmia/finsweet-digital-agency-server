@@ -34,7 +34,7 @@ module.exports.register = async (req, res) => {
     }
 }
 
-
+// login
 module.exports.login = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -80,6 +80,36 @@ module.exports.login = async (req, res) => {
         return res.status(500).json({ message: err.message });
     }
 }
+
+
+// change password
+module.exports.changePassword = async (req, res) => {
+    try {
+        const {oldPassword, newPassword, confirmPassword} = req.body;
+        const reqUser = req.user;
+        
+        // if exist the user
+        let user = await User.findOne({_id: reqUser._id});
+        if (user) {
+            if (newPassword === confirmPassword) {
+                const hashedPassword = await hash(newPassword);
+                user.password = hashedPassword;
+                user.save();
+                return res.status(200).json({message: `Password has been changed!`});
+            } else {
+                return res.status(400).json({ message: `Password didn't match!` });
+            }
+        } else {
+            return res.status(404).json({message: `We couldn't find any user!`});
+        }
+
+        res.send("Hello world");
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+
 
 
 // Forgot password email send
