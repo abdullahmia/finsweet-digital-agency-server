@@ -1,5 +1,6 @@
 const { hash } = require("../lib/hash");
 const { genarateToken } = require("../lib/jwt");
+const sendMail = require("../lib/mailer/mailer");
 const User = require("../models/user");
 
 
@@ -11,7 +12,6 @@ module.exports.register = async (req, res) => {
 
         // check if user is exist
         let user = await User.findOne({email});
-        console.log("User: ", user);
         if (user) {
             return res.status(409).json({message: 'User already exist!'});
         }
@@ -24,8 +24,12 @@ module.exports.register = async (req, res) => {
 
         await user.save();
 
+        // send the welcome name
+        await sendMail(email, 'Welcome to Smart Agency', { name: `${user.firstName} ${user.lastName}`});
+
         return res.status(200).json({ message: "Register successfull"});
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
