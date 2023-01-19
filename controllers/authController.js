@@ -5,7 +5,12 @@ const { WelcomeEmail, ResetPasswordEmail } = require("../lib/mailer/themes");
 const User = require("../models/user");
 const { verifyToken } = require("../utils/utils");
 
-
+/**
+ * @description This API is used to Create New User.
+ * @Route  POST /api/auth/register
+ * @Access Public
+ * @returns {Object} - Created User.
+ */
 module.exports.register = async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
@@ -29,12 +34,16 @@ module.exports.register = async (req, res) => {
 
         return res.status(200).json({ message: "Register successfull"});
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
 
-// login
+/**
+ * @description This API is used to login a User.
+ * @Route  POST /api/auth/login
+ * @Access Public
+ * @returns {Object} - User & Token.
+ */
 module.exports.login = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -82,7 +91,12 @@ module.exports.login = async (req, res) => {
 }
 
 
-// change password
+/**
+ * @description This API is used to change password.
+ * @Route PUT /api/auth/change-password
+ * @Access ADMIN
+ * @returns {String} - Messgage.
+ */
 module.exports.changePassword = async (req, res) => {
     try {
         const {oldPassword, newPassword, confirmPassword} = req.body;
@@ -90,20 +104,26 @@ module.exports.changePassword = async (req, res) => {
         
         // if exist the user
         let user = await User.findOne({_id: reqUser._id});
-        if (user) {
-            if (newPassword === confirmPassword) {
-                const hashedPassword = await hash(newPassword);
-                user.password = hashedPassword;
-                user.save();
-                return res.status(200).json({message: `Password has been changed!`});
+        let isOldPasswordTrue = await user.isValidatePassword(oldPassword);
+        if (isOldPasswordTrue) {
+            if (user) {
+                if (newPassword === confirmPassword) {
+                    const hashedPassword = await hash(newPassword);
+                    user.password = hashedPassword;
+                    user.save();
+                    return res.status(200).json({ message: `Password has been changed!` });
+                } else {
+                    return res.status(400).json({ message: `Password didn't match!` });
+                }
             } else {
-                return res.status(400).json({ message: `Password didn't match!` });
+                return res.status(404).json({ message: `We couldn't find any user!` });
             }
         } else {
-            return res.status(404).json({message: `We couldn't find any user!`});
+            return res.status(404).json({ message: `Old Password was wrong` });
         }
+        
 
-        res.send("Hello world");
+       
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
@@ -112,7 +132,13 @@ module.exports.changePassword = async (req, res) => {
 
 
 
-// Forgot password email send
+/**
+ * @description This API is used to update single product.
+ * @Route POST /api/auth/forgot-password
+ * @Access PUBLIC
+ * @returns {Object} - Send Eamail on user email.
+ * @param {String} email - Email.
+ */
 module.exports.forgotPasswordEmailSend = async (req, res) => {
     try {
         const {email} = req.body;
@@ -141,7 +167,11 @@ module.exports.forgotPasswordEmailSend = async (req, res) => {
 }
 
 
-// rest password
+/**
+ * @description This API is used to update reset user password.
+ * @Route PUT /api/auth/reset-password/:userId/:token
+ * @Access PUBLIC
+ */
 module.exports.resetPassword = async (req, res) => {
     try {
         const {userId, token} = req.params;
@@ -150,26 +180,69 @@ module.exports.resetPassword = async (req, res) => {
         if (token) {
             let isVerified = verifyToken(token);
             if (isVerified) {
-                let user = await User.findOne({ _id: userId });
-                if (user) {
+                try {
+                    let user = await User.findOne({ _id: userId });
                     if (password === confirmPassword) {
                         const hashedPassword = await hash(password);
                         user.password = hashedPassword;
                         await user.save();
-                        return res.status(200).json({message: `Password has been changed!`});
+                        return res.status(200).json({ message: `Password has been changed!` });
                     } else {
-                        return res.status(400).json({message: `Password & confirm password didn't match!`});
+                        return res.status(400).json({ message: `Password & confirm password didn't match!` });
                     }
-                } else {
-                    return res.status(404).json({ message: `We couldn't find any with this email!` });
+                } catch (error) {
+                    return res.status(404).json({ message: `We couldn't find any user` }); 
                 }
+                
             } else {
                 return res.status(500).json({message: `Token has been expired!`});
             }
         }
 
     } catch (err) {
-        console.log(err);
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+/**
+ * @description This API is used to Fetch a user data.
+ * @Route GET /api/auth/user/:userid
+ * @Access Authenticated
+ * @returns {Object} - User.
+ */
+module.exports.getUser = async (req, res) => {
+    try {
+        const {userId} = req.params;
+        const user = req.user;
+        try {
+            const user = await User.findOne({ _id: userId }).select('-password');
+            return res.status(200).json(user);
+        } catch (err) {
+            return res.status(404).json({message: `Couldn't find any user!`})
+        }
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+/**
+ * @description This API is used to update a user.
+ * @Route PATCH /api/auth/user/:userid
+ * @Access Authenticated
+ * @returns {Object} - User.
+ */
+
+module.exports.updateUser = async (req, res) => {
+    try { 
+        const userId = req.params.userId;
+        try {
+            let user = await User.findOne({_id: userId});
+            let updatedUser = await User.findOneAndUpdate({_id: userId}, {...req.body}, {new: true}).select('-password');
+            return res.status(200).json(updatedUser);
+        } catch (err) {
+            return res.status(404).json({message: `We couldn't find any user`});
+        }
+    } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 }
