@@ -32,8 +32,18 @@ const articleSchema = new Schema({
     },
     tags: {
         type: Array
+    },
+    slug: {
+        type: String
     }
 }, {timestamps: true});
+
+
+// adding the slug
+articleSchema.pre('save', function (next) {
+    this.slug = slugify(this.title.toLowerCase());
+    next();
+})
 
 // defining the model
 const Article = model('Article', articleSchema);

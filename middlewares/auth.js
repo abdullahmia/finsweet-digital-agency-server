@@ -34,7 +34,6 @@ module.exports.isAdmin = async (req, res, next) => {
                 return res.status(401).json({ message: "Access Denied" });
             }
         } catch (error) {
-            console.log(error);
             return res.status(400).send("Invalid Token!");
         }
     } else {

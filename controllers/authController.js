@@ -2,7 +2,7 @@ const { hash } = require("../lib/hash");
 const { genarateToken } = require("../lib/jwt");
 const sendMail = require("../lib/mailer/mailer");
 const { WelcomeEmail, ResetPasswordEmail } = require("../lib/mailer/themes");
-const User = require("../models/user");
+const User = require('../models/User');
 const { verifyToken } = require("../utils/utils");
 
 /**

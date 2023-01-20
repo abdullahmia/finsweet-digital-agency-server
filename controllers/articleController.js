@@ -1,5 +1,6 @@
 const { ArticleCategory } = require("../models/Categories");
-
+const cloudinary = require('../lib/cloudinary');
+const Article = require('../models/Article');
 
 
 /**
@@ -10,11 +11,18 @@ const { ArticleCategory } = require("../models/Categories");
  */
 module.exports.createArticle = async (req, res) => {
     try {
-        const { title, categories, shortDescription, description, tags } = req.body;
-        const user = req.user;
-        const image = req.file;
-        res.send(user);
+        const { title, categories, image, shortDescription, description, tags} = req.body;
+        // upload image on cloudinary
+        const uploadedImage = await cloudinary.uploader.upload(image, {folder: 'agency/articles', crop: 'scale'});
+
+        const addArticle = new Article({title, author: req.user._id, categories, shortDescription, description, tags, image: uploadedImage.public_id});
+
+        await addArticle.save();
+        return res.status(200).json({message: 'Article has been added!', article: addArticle});
+
+        res.send(title);
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
