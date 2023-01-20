@@ -1,4 +1,4 @@
-const { createCategory, getAllCategories, deleteCategory, updateCategory, createArticle } = require('../controllers/articleController');
+const { createCategory, getAllCategories, deleteCategory, updateCategory, createArticle, getArtilces } = require('../controllers/articleController');
 const uploader = require('../lib/multer');
 const router = require('express').Router();
 
@@ -18,5 +18,6 @@ router.route('/category/:slug')
 // article
 router.route('/')
     .post([isLoggedIn, isAdmin], uploader.single('image'), createArticle)
+    .get(getArtilces)
 
 module.exports = router;

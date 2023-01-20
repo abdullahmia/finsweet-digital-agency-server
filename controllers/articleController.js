@@ -22,7 +22,29 @@ module.exports.createArticle = async (req, res) => {
 
         res.send(title);
     } catch (err) {
-        console.log(err);
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+/**
+ * @description This API is used to Fetch All Article.
+ * @Route GET /api/article
+ * @Access PUBLIC
+ * @returns {Object} - Created Articles.
+ */
+module.exports.getArtilces = async (req, res) => {
+    try {
+        // get all articles with pagination & page limit
+
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const total = await Article.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+        // all articles with pagination & populate author without password & email & categories
+        const articles = await Article.find({}).skip(skip).limit(limit).populate('author', '-password -email').populate('categories').sort({createdAt: -1});
+        return res.status(200).json({articles, totalPages});
+    } catch (err) {
         return res.status(500).json({ message: err.message });
     }
 }
@@ -85,7 +107,6 @@ module.exports.createCategory = async (req, res) => {
  * @Access public
  * @returns {Object} - Created Categories.
  */
-
 module.exports.getAllCategories = async (req, res) => {
     try {
         // get all categories with how many articles in each category with created date
