@@ -13,6 +13,15 @@ const articleCategorySchema = new Schema({
     }
 }, {timestamps: true});
 
+
+// project category schema
+const projectCategorySchema = new Schema({
+    name: {
+        type: String,
+        required: true   
+    }
+}, {timestamps: true})
+
 // slug
 articleCategorySchema.pre('save', function (next) {
     this.slug = slugify(this.name.toLowerCase());
@@ -22,4 +31,7 @@ articleCategorySchema.pre('save', function (next) {
 
 // Article Category Model
 const ArticleCategory = model('ArticleCategory', articleCategorySchema);
-module.exports = {ArticleCategory};
+
+// project category model
+const ProjectCategory = model('ProjectCategory', projectCategorySchema);
+module.exports = {ArticleCategory, ProjectCategory};
