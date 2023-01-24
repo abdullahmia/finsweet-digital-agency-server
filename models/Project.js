@@ -48,6 +48,8 @@ projectSchema.pre('save', async function (next) {
         const projectWithSlug = await Project.findOne({ slug });
         if (projectWithSlug) {
             project.slug = `${slug}-${projectWithSlug._id}`;
+        } else {
+            project.slug = slug;
         }
         next();
     } catch (err) {
