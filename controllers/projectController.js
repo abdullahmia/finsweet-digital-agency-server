@@ -1,6 +1,17 @@
 const { ProjectCategory } = require('../models/Categories');
 
 
+
+
+
+
+
+
+
+
+
+
+
 module.exports.createCategory = async (req, res) => {
     try {
         const { name } = req.body;
