@@ -16,12 +16,15 @@ module.exports.createArticle = async (req, res) => {
         const uploadedImage = await cloudinary.uploader.upload(image, {folder: 'agency/articles', crop: 'scale'});
 
         const addArticle = new Article({title, author: req.user._id, categories, shortDescription, description, tags, image: uploadedImage.public_id});
-
         await addArticle.save();
-        return res.status(200).json({message: 'Article has been added!', article: addArticle});
 
-        res.send(title);
+        // get the created article with populate author without password & email & categories
+        const article = await Article.findOne({_id: addArticle._id}).populate('author', '-password -email').populate('categories');
+
+        return res.status(200).json({message: 'Article has been added!', article});
+
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
@@ -47,6 +50,95 @@ module.exports.getArtilces = async (req, res) => {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
+}
+
+
+
+/**
+ * @description This API is used to Fetch Single Article.
+ * @Route GET /api/article/:slug
+ * @Access PUBLIC
+ * @returns {Object} - Created Articles.
+ */
+module.exports.getArticle = async (req, res) => {
+    try {
+        const {slug} = req.params;
+        const article = await Article.findOne({ slug }).populate('author', '-password -email').populate('categories');
+        if (!article) {
+            return res.status(404).json('Not Found');
+        }
+        return res.status(200).json(article);
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+
+
+/**
+ * @description This API is used delete single article.
+ * @Route DELETE /api/article/:slug
+ * @Access ADMIN
+ * @returns {String} - Delete Message Message.
+ * @param {String} slug - Category slug.
+ */
+module.exports.deleteArticle = async (req, res) => {
+    try {
+        const {slug} = req.params;
+        const article = await Article.findOne({slug});
+        if (!article) {
+            return res.status(404).json({message: 'Article not found!'});
+        }
+
+        // delete image from cloudinary
+        await cloudinary.uploader.destroy(article.image);
+
+        await article.remove();
+        // return delete response with delete message & deleted item
+        return res.status(200).json({message: 'Article has been deleted!', article});
+
+    }catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+
+
+/**
+ * @description This API is used to update single article.
+ * @Route PUT /api/article/:slug
+ * @Access ADMIN
+ * @returns {Object} - Updated Data.
+ * @param {String} slug - Category slug.
+ */
+module.exports.updateArticle = async (req, res) => {
+    try {
+        let article;
+        const {id} = req.params;
+        const {title, categories, image, shortDescription, description, tags} = req.body;
+        const isArticle = await Article.findOne({_id: id});
+        if (!isArticle) {
+            return res.status(404).json({message: 'Article not found!'});
+        }
+
+        // if image is not changed then update other fields
+        if (image === null) {
+            article = await Article.findOneAndUpdate({_id: id}, {title, categories, shortDescription, description, tags}, {new: true}).populate('author', '-password -email').populate('categories');
+
+        } else {
+            // delete old image from cloudinary
+            await cloudinary.uploader.destroy(image);
+            // upload new image on cloudinary
+            const uploadedImage = await cloudinary.uploader.upload(image, {folder: 'agency/articles', crop: 'scale'});
+            article = await Article.findOneAndUpdate({ _id: id }, { title, categories, shortDescription, description, tags, image: uploadedImage.public_id}).populate('author', '-password -email').populate('categories');
+        }
+        
+        return res.status(200).json({message: 'Article has been updated!', article});
+
+    }catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+
 }
 
 
@@ -139,7 +231,7 @@ module.exports.getAllCategories = async (req, res) => {
 }
 
 /**
- * @description This API is used to update single product.
+ * @description This API is used to update single category.
  * @Route PUT /api/article/category/:slug
  * @Access ADMIN
  * @returns {Object} - Updated Data.

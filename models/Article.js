@@ -34,7 +34,8 @@ const articleSchema = new Schema({
         type: Array
     },
     slug: {
-        type: String
+        type: String,
+        unique: true
     }
 }, {timestamps: true});
 

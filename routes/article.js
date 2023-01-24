@@ -1,4 +1,4 @@
-const { createCategory, getAllCategories, deleteCategory, updateCategory, createArticle, getArtilces } = require('../controllers/articleController');
+const { createCategory, getAllCategories, deleteCategory, updateCategory, createArticle, getArtilces, deleteArticle, getArticle, updateArticle } = require('../controllers/articleController');
 const uploader = require('../lib/multer');
 const router = require('express').Router();
 
@@ -19,5 +19,14 @@ router.route('/category/:slug')
 router.route('/')
     .post([isLoggedIn, isAdmin], uploader.single('image'), createArticle)
     .get(getArtilces)
+
+
+
+router.route('/:slug')
+    .delete([isLoggedIn, isAdmin], deleteArticle)
+    .get(getArticle)
+
+router.patch("/:id", [isLoggedIn, isAdmin], uploader.single("image"), updateArticle);
+
 
 module.exports = router;
