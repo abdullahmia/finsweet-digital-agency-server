@@ -40,11 +40,22 @@ const articleSchema = new Schema({
 }, {timestamps: true});
 
 
-// adding the slug
-articleSchema.pre('save', function (next) {
-    this.slug = slugify(this.title.toLowerCase());
-    next();
-})
+// genarate unique slug based on title
+articleSchema.pre('save', async function (next) {
+    try {
+        const article = this;
+        const slug = slugify(article.title, {lower: true});
+        const articleWithSlug = await Article.findOne({slug});
+        if (articleWithSlug) {
+            article.slug = `${slug}-${articleWithSlug._id}`;
+        } else {
+            article.slug = slug;
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
 
 // defining the model
 const Article = model('Article', articleSchema);
