@@ -5,12 +5,7 @@ const { WelcomeEmail, ResetPasswordEmail } = require("../lib/mailer/themes");
 const User = require('../models/User');
 const { verifyToken } = require("../utils/utils");
 
-/**
- * @description This API is used to Create New User.
- * @Route  POST /api/auth/register
- * @Access Public
- * @returns {Object} - Created User.
- */
+
 module.exports.register = async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
@@ -38,12 +33,6 @@ module.exports.register = async (req, res) => {
     }
 }
 
-/**
- * @description This API is used to login a User.
- * @Route  POST /api/auth/login
- * @Access Public
- * @returns {Object} - User & Token.
- */
 module.exports.login = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -91,12 +80,7 @@ module.exports.login = async (req, res) => {
 }
 
 
-/**
- * @description This API is used to change password.
- * @Route PUT /api/auth/change-password
- * @Access ADMIN
- * @returns {String} - Messgage.
- */
+
 module.exports.changePassword = async (req, res) => {
     try {
         const {oldPassword, newPassword, confirmPassword} = req.body;
@@ -132,13 +116,7 @@ module.exports.changePassword = async (req, res) => {
 
 
 
-/**
- * @description This API is used to update single product.
- * @Route POST /api/auth/forgot-password
- * @Access PUBLIC
- * @returns {Object} - Send Eamail on user email.
- * @param {String} email - Email.
- */
+
 module.exports.forgotPasswordEmailSend = async (req, res) => {
     try {
         const {email} = req.body;
@@ -167,11 +145,7 @@ module.exports.forgotPasswordEmailSend = async (req, res) => {
 }
 
 
-/**
- * @description This API is used to update reset user password.
- * @Route PUT /api/auth/reset-password/:userId/:token
- * @Access PUBLIC
- */
+
 module.exports.resetPassword = async (req, res) => {
     try {
         const {userId, token} = req.params;
@@ -204,12 +178,7 @@ module.exports.resetPassword = async (req, res) => {
     }
 }
 
-/**
- * @description This API is used to Fetch a user data.
- * @Route GET /api/auth/user/:userid
- * @Access Authenticated
- * @returns {Object} - User.
- */
+
 module.exports.getUser = async (req, res) => {
     try {
         const {userId} = req.params;
@@ -225,12 +194,6 @@ module.exports.getUser = async (req, res) => {
     }
 }
 
-/**
- * @description This API is used to update a user.
- * @Route PATCH /api/auth/user/:userid
- * @Access Authenticated
- * @returns {Object} - User.
- */
 
 module.exports.updateUser = async (req, res) => {
     try { 

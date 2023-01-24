@@ -3,12 +3,6 @@ const cloudinary = require('../lib/cloudinary');
 const Article = require('../models/Article');
 
 
-/**
- * @description This API is used to Create New Article.
- * @Route  POST /api/article
- * @Access Admin
- * @returns {Object} - Created Article.
- */
 module.exports.createArticle = async (req, res) => {
     try {
         const { title, categories, image, shortDescription, description, tags} = req.body;
@@ -29,12 +23,6 @@ module.exports.createArticle = async (req, res) => {
     }
 }
 
-/**
- * @description This API is used to Fetch All Article.
- * @Route GET /api/article
- * @Access PUBLIC
- * @returns {Object} - Created Articles.
- */
 module.exports.getArtilces = async (req, res) => {
     try {
         // get all articles with pagination & page limit
@@ -53,13 +41,6 @@ module.exports.getArtilces = async (req, res) => {
 }
 
 
-
-/**
- * @description This API is used to Fetch Single Article.
- * @Route GET /api/article/:slug
- * @Access PUBLIC
- * @returns {Object} - Created Articles.
- */
 module.exports.getArticle = async (req, res) => {
     try {
         const {slug} = req.params;
@@ -75,13 +56,6 @@ module.exports.getArticle = async (req, res) => {
 
 
 
-/**
- * @description This API is used delete single article.
- * @Route DELETE /api/article/:slug
- * @Access ADMIN
- * @returns {String} - Delete Message Message.
- * @param {String} slug - Category slug.
- */
 module.exports.deleteArticle = async (req, res) => {
     try {
         const {slug} = req.params;
@@ -104,13 +78,6 @@ module.exports.deleteArticle = async (req, res) => {
 
 
 
-/**
- * @description This API is used to update single article.
- * @Route PUT /api/article/:slug
- * @Access ADMIN
- * @returns {Object} - Updated Data.
- * @param {String} slug - Category slug.
- */
 module.exports.updateArticle = async (req, res) => {
     try {
         let article;
@@ -142,12 +109,6 @@ module.exports.updateArticle = async (req, res) => {
 }
 
 
-/**
- * @description This API is used to Create New Category.
- * @Route  POST /api/article/category
- * @Access Admin
- * @returns {Object} - Created Category.
- */
 module.exports.createCategory = async (req, res) => {
     try {
         const { name } = req.body;
@@ -193,12 +154,6 @@ module.exports.createCategory = async (req, res) => {
 }
 
 
-/**
- * @description This API is used to Fetch All Article Categories.
- * @Route GET /api/article/category
- * @Access public
- * @returns {Object} - Created Categories.
- */
 module.exports.getAllCategories = async (req, res) => {
     try {
         // get all categories with how many articles in each category with created date
@@ -230,14 +185,6 @@ module.exports.getAllCategories = async (req, res) => {
     }
 }
 
-/**
- * @description This API is used to update single category.
- * @Route PUT /api/article/category/:slug
- * @Access ADMIN
- * @returns {Object} - Updated Data.
- * @param {String} slug - Category slug.
- */
-
 module.exports.updateCategory = async (req, res) => {
     try {
         const {slug} = req.params;
@@ -262,13 +209,6 @@ module.exports.updateCategory = async (req, res) => {
 }
 
 
-/**
- * @description This API is used delete single article categor.
- * @Route DELETE /api/article/category/:slug
- * @Access ADMIN
- * @returns {String} - Delete Message Message.
- * @param {String} slug - Category slug.
- */
 module.exports.deleteCategory = async (req, res) => {
     try {
         const {slug} = req.params;
