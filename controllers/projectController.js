@@ -1,15 +1,60 @@
 const { ProjectCategory } = require('../models/Categories');
+const cloudinary = require('../lib/cloudinary');
+const Project = require('../models/Project');
+
+module.exports.createProject = async (req, res) => {
+    try { 
+        // get data from request body
+        const { title, category, shortDescription, description, tags, images } = req.body;
+        // check if all fields are filled
+        if (!title || !category || !shortDescription || !description || !tags || !images) {
+            return res.status(404).json({ message: `All fields are required!` });
+        }
+
+        const user = req.user;
+
+        console.log('Images: ', image);
+
+        // upload images to cloudinary
+        const uploadedImages = await Promise.all(images.map(async (image) => {
+            const uploadedImage = await cloudinary.uploader.upload(image, {
+                folder: 'projects'
+            });
+            return uploadedImage.secure_url;
+        }));
 
 
+        console.log("Uploaded Images: ", uploadedImages);
+
+        // create new project
+        const project = new Project({
+            title,
+            category,
+            shortDescription,
+            description,
+            images: uploadedImages,
+            author: user._id,
+            tags
+        });
+
+        await project.save();
+        return res.status(200).json({message: `Project created successfully!`, project});
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: err.message });
+    }
+}
 
 
+module.exports.getProjects = async (req, res) => {
+    try { 
+        return res.send('hello prject')
 
-
-
-
-
-
-
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
 
 
 module.exports.createCategory = async (req, res) => {

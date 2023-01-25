@@ -10,7 +10,7 @@ router.route('/category')
     .post([isLoggedIn, isAdmin], createCategory)
     .get(getAllCategories)
 
-router.route('/category/:slug')
+router.route('/category/:id')
     .patch([isLoggedIn], updateCategory)
     .delete([isLoggedIn], deleteCategory)
 
