@@ -1,4 +1,4 @@
-const { createService, getServices, updateService, deleteService } = require('../controllers/serviceController');
+const { createService, getServices, getService, updateService, deleteService } = require('../controllers/serviceController');
 const { isLoggedIn, isAdmin } = require('../middlewares/auth');
 
 const router = require('express').Router();
@@ -12,6 +12,7 @@ router.route('/')
 router.route('/:id')
     .patch([isLoggedIn, isAdmin], updateService)
     .delete([isLoggedIn, isAdmin], deleteService)
+    .get(getService)
 
 
 module.exports = router;

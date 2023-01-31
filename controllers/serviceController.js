@@ -13,6 +13,7 @@ module.exports.createService = async (req, res) => {
         await service.save();
         return res.status(201).json({message: "Service created successfully.", service})
     } catch (err) {
+        console.log(err)
         return res.status(500).json({message: err.message})
     }
 }
@@ -20,7 +21,25 @@ module.exports.createService = async (req, res) => {
 module.exports.getServices = async (req, res) => {
     try {
         const services = await Service.find({});
-        return res.status(200).json({services})
+        return res.status(200).json(services)
+    } catch (err) {
+        return res.status(500).json({message: err.message})
+    }
+}
+
+
+module.exports.getService = async (req, res) => {
+    try {
+        const {id} = req.params;
+
+        try {
+            const service = await Service.findOne({ _id: id });
+            return res.status(200).json(service)
+        } catch (err) {
+            return res.status(404).json({message: "Service not found."})
+        }
+        
+
     } catch (err) {
         return res.status(500).json({message: err.message})
     }

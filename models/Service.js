@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 const slugify = require("slugify");
 
 
-const ServiceSchema = new Schema({
+const serviceSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -32,11 +32,27 @@ const ServiceSchema = new Schema({
 }, {timestamps: true});
 
 
-// genarate unique slug for each service based on name
-ServiceSchema.pre("save", function(next) {
-    this.slug = slugify(this.name, { lower: true });
-    next();
+// genarate unique slug based on Service name
+serviceSchema.pre("save", async function (next) {
+    try {
+        const service = this;
+        const slug = service.name.replace(/\s+/g, '-').toLowerCase();
+        const serviceWithSlug = await Service.findOne({ slug });
+        // genareate unique slug
+        const slugRegex = new RegExp(`^(${slug})((-[0-9]*$)?)$`, "i");
+
+        if (serviceWithSlug) {
+            const slugNum = slug.match(slugRegex)[2] ? parseInt(slug.match(slugRegex)[2].slice(1)) + 1 : 1;
+            service.slug = `${slug}-${slugNum}`;
+        } else {
+            service.slug = slug;
+        }
+
+        next();
+    } catch (err) {
+        next(err);
+    }
 });
 
-const Service = model("Service", ServiceSchema);
+const Service = model("Service", serviceSchema);
 module.exports = Service;
