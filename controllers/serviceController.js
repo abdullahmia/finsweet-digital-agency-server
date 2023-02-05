@@ -13,7 +13,6 @@ module.exports.createService = async (req, res) => {
         await service.save();
         return res.status(201).json({message: "Service created successfully.", service})
     } catch (err) {
-        console.log(err)
         return res.status(500).json({message: err.message})
     }
 }
