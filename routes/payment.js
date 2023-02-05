@@ -9,7 +9,7 @@ router.route('/:serviceId')
 
 
 router.route('/ipn')
-    .get(paymentIpn)
+    .post(paymentIpn)
 
 
 module.exports = router;
