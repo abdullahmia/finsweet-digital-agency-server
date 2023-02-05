@@ -37,7 +37,7 @@ module.exports.initPayment = async (req, res) => {
         success: "yoursite.com/success", // If payment Succeed
         fail: "yoursite.com/fail", // If payment failed
         cancel: "yoursite.com/cancel", // If user cancel payment
-        ipn: "yoursite.com/ipn", // SSLCommerz will send http post request in this link
+        ipn: "https://smart-agency-server.onrender.com/api/make-payment/ipn", // SSLCommerz will send http post request in this link
     });
 
     // Set order details
@@ -86,4 +86,9 @@ module.exports.initPayment = async (req, res) => {
     // console.log(response);
     return res.status(200).json(response);
 
+}
+
+
+module.exports.paymentIpn = async (req, res) => {
+    console.log(req.body);
 }
