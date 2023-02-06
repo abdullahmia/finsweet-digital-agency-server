@@ -1,5 +1,8 @@
 const SSLCommerz = require("ssl-commerz-node");
+const Order = require("../models/Order");
+const Payment = require("../models/Payment");
 const Service = require("../models/Service");
+const { genarateTransactionId } = require("../utils/utils");
 const PaymentSession = SSLCommerz.PaymentSession;
 require("dotenv").config();
 
@@ -14,6 +17,8 @@ module.exports.initPayment = async (req, res) => {
 
     // Get the service id from the url
     const serviceId = req.params.serviceId;
+
+    const transactionId = genarateTransactionId();
 
     // Check if service is exist or not
     const service = await Service.findById(serviceId);
@@ -44,7 +49,7 @@ module.exports.initPayment = async (req, res) => {
     payment.setOrderInfo({
         total_amount: service.price, // Number field
         currency: "BDT", // Must be three character string
-        tran_id: "ref12345667", // Unique Transaction id
+        tran_id: transactionId, // Unique Transaction id
         emi_option: 0, // 1 or 0
     });
 
@@ -83,12 +88,25 @@ module.exports.initPayment = async (req, res) => {
     });
 
     let response = await payment.paymentInit();
-    // console.log(response);
-    return res.status(200).json(response);
+    let order = new Order({ service: serviceId, user: user._id, transactionId: transactionId });
+    if (response.status === 'SUCCESS') {
+        order.sessionKey = response['sessionkey'];
+        await order.save();
+    }
 
+    return res.status(200).json(response);
 }
 
 
 module.exports.paymentIpn = async (req, res) => {
-    console.log(req.body);
+    const payment = new Payment(req.body);
+    const trans_id = payment['tran_id'];
+    if (payment['status'] === 'VALID') {
+        const order = await Order.findOneAndUpdate({ transactionId: trans_id }, { status: 'in progress'}, { new: true });
+    } else {
+        await Order.findOneAndDelete({transactionId: trans_id});
+    }
+
+    await payment.save();
+    return res.status(200).json({ success: true });
 }

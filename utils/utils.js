@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Order = require('../models/Order');
 
 module.exports.verifyToken = token => {
     if (token) {
@@ -11,4 +12,14 @@ module.exports.verifyToken = token => {
             return false;
         }
     }
+}
+
+// genate a random transaction id based on order model if not exist
+module.exports.genarateTransactionId = () => {
+    const transactionId = Math.random().toString(36).substring(2);
+    const order = Order.findOne({transactionId});
+    if (order) {
+        return genarateTransactionId();
+    }
+    return transactionId;
 }
