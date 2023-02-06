@@ -38,9 +38,9 @@ module.exports.initPayment = async (req, res) => {
 
     // Set the urls
     payment.setUrls({
-        success: `${process.env.CLIENT_URL}/oder-complete`, // If payment Succeed
-        fail: `${process.env.CLIENT_URL}/oder-complete`, // If payment failed
-        cancel: `${process.env.CLIENT_URL}/oder-complete`, // If user cancel payment
+        success: `${process.env.CLIENT_URL}/order-complete`, // If payment Succeed
+        fail: `${process.env.CLIENT_URL}/odrer-complete`, // If payment failed
+        cancel: `${process.env.CLIENT_URL}/order-complete`, // If user cancel payment
         ipn: "https://smart-agency-server.onrender.com/api/make-payment/ipn", // SSLCommerz will send http post request in this link
     });
 
