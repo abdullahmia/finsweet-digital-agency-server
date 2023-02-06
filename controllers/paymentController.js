@@ -120,5 +120,5 @@ module.exports.paymentCancel = async (req, res) => {
 }
 
 module.exports.paymentFail = async (req, res) => {
-    res.redirect(`${process.env.CLIENT_URL}/order-complete?status=fail`);
+    res.redirect(`${process.env.CLIENT_URL}/order-complete?status=failed`);
 }
