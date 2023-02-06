@@ -38,9 +38,9 @@ module.exports.initPayment = async (req, res) => {
 
     // Set the urls
     payment.setUrls({
-        success: `${process.env.CLIENT_URL}/order-complete`, // If payment Succeed
-        fail: `${process.env.CLIENT_URL}/odrer-complete`, // If payment failed
-        cancel: `${process.env.CLIENT_URL}/order-complete`, // If user cancel payment
+        success: `https://smart-agency-server.onrender.com/api/make-payment/success`, // If payment Succeed
+        fail: `https://smart-agency-server.onrender.com/api/make-payment/fail`, // If payment failed
+        cancel: `https://smart-agency-server.onrender.com/api/make-payment/cancel`, // If user cancel payment
         ipn: "https://smart-agency-server.onrender.com/api/make-payment/ipn", // SSLCommerz will send http post request in this link
     });
 
@@ -108,4 +108,17 @@ module.exports.paymentIpn = async (req, res) => {
 
     await payment.save();
     return res.status(200).json({ success: true });
+}
+
+
+module.exports.paymentSuccess = async (req, res) => {
+    res.redirect(`${process.env.CLIENT_URL}/order-complete?status=success`);
+}
+
+module.exports.paymentCancel = async (req, res) => {
+    res.redirect(`${process.env.CLIENT_URL}/order-complete?status=cancel`);
+}
+
+module.exports.paymentFail = async (req, res) => {
+    res.redirect(`${process.env.CLIENT_URL}/order-complete?status=fail`);
 }
