@@ -88,7 +88,7 @@ module.exports.initPayment = async (req, res) => {
     });
 
     let response = await payment.paymentInit();
-    let order = new Order({ service: serviceId, user: user._id, transactionId: transactionId });
+    let order = new Order({ service: service._id, user: user._id, transactionId: transactionId });
     if (response.status === 'SUCCESS') {
         order.sessionKey = response['sessionkey'];
         await order.save();

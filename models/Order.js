@@ -4,7 +4,7 @@ const { Schema, model, Types } = require('mongoose');
 // make a order schema based on service schema
 const orderSchema = new Schema({
     service: {
-        type: Types.objectId,
+        type: Types.ObjectId,
         ref: 'Service'
     },
     user: {
