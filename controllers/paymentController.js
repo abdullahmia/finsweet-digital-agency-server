@@ -13,7 +13,6 @@ require("dotenv").config();
 module.exports.initPayment = async (req, res) => {
 
     const user = req.user;
-    console.log('This is the user: ', user)
 
     // Get the service id from the url
     const serviceId = req.params.serviceId;

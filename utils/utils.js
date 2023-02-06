@@ -19,7 +19,8 @@ module.exports.genarateTransactionId = () => {
     const transactionId = Math.random().toString(36).substring(2);
     const order = Order.findOne({transactionId});
     if (order) {
-        return genarateTransactionId();
+        // return genarateTransactionId(); // genarateTransactionId is not working
+        return Math.random().toString(36).substring(2);
     }
     return transactionId;
 }
