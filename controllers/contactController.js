@@ -1,4 +1,5 @@
 const Contact = require('../models/Contact');
+const Notification = require('../models/Notification');
 
 
 module.exports.addContact = async (req, res) => {
@@ -13,6 +14,14 @@ module.exports.addContact = async (req, res) => {
         // send message to admin via socket.io
         global.io.emit('newContact', contact);
 
+        // Add contact notification data to the database
+        // const notification = new Notification({
+        //     type: 'contact',
+        //     message: `${name} has sent you a message!`,
+        //     link: '/admin/contacts'
+        // })
+        // await notification.save();
+
         return res.status(200).json({msg: 'Message sent successfully!'})
     } catch (err) {
         return res.status(500).json({msg: err.message})
@@ -22,7 +31,7 @@ module.exports.addContact = async (req, res) => {
 
 module.exports.getContacts = async (req, res) => {
     try {
-        const contacts = await Contact.find().sort('-createdAt');
+        const contacts = await Contact.find({}).sort('-createdAt');
         return res.status(200).json(contacts)
     } catch (err) {
         return res.status(500).json({msg: err.message})

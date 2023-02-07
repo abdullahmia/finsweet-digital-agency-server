@@ -18,19 +18,14 @@ const notificationSchema = new Schema({
         type: String,
         enum: ['article', 'order', 'message', 'role']
     },
-    // the article or order that the notification is for
-    article: {
-        type: Types.ObjectId,
-        ref: 'Article'
+    
+    link: {
+        type: String
     },
-    order: {
-        type: Types.ObjectId,
-        ref: 'Order'
-    },
-    // the message that the notification is for
+
     message: {
-        type: Types.ObjectId,
-        ref: 'Message'
+        type: String,
+        required: true
     },
 }, {timestamps: true});
 

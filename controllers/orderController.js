@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Payment = require('../models/Payment');
+const Notification = require('../models/Notification');
 
 // get user orders
 exports.getUserOrders = async (req, res) => {
@@ -45,6 +46,14 @@ module.exports.updateOrder = async (req, res) => {
 
         try {
             const order = await Order.findOneAndUpdate({ _id: orderId }, {...req.body}, { new: true });
+
+            // add notification data to the database
+            const notification = new Notification({ recipient: order.user._id, type: 'order', message: `Your order has been ${order.status}`, link: `/account/history/${order._id}`});
+            await notification.save();
+
+            // send notification & order to user via socket.io
+            global.io.emit('newNotification', { order, notification });
+
             res.status(200).json({ order, message: 'Order has been updated!'});
         } catch (error) {
             return res.status(500).json({ msg: 'Something went wrong' })
