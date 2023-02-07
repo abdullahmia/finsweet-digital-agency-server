@@ -14,3 +14,13 @@ module.exports.addContact = async (req, res) => {
         return res.status(500).json({msg: err.message})
     }
 }
+
+
+module.exports.getContacts = async (req, res) => {
+    try {
+        const contacts = await Contact.find().sort('-createdAt');
+        return res.status(200).json(contacts)
+    } catch (err) {
+        return res.status(500).json({msg: err.message})
+    }
+}

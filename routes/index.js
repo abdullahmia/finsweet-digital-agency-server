@@ -7,5 +7,6 @@ router.use('/project', require('./project'));
 router.use('/contact', require('./contact'));
 router.use('/service', require('./service'));
 router.use('/make-payment', require('./payment'));
+router.use('/order', require('./order'));
 
 module.exports = router;
