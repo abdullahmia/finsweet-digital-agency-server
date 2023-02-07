@@ -9,6 +9,10 @@ module.exports.addContact = async (req, res) => {
         }
         const contact = new Contact({name, email, category, subject, message});
         await contact.save();
+
+        // send message to admin via socket.io
+        global.io.emit('newContact', contact);
+
         return res.status(200).json({msg: 'Message sent successfully!'})
     } catch (err) {
         return res.status(500).json({msg: err.message})

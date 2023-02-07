@@ -24,6 +24,7 @@
 		"nodemailer": "^6.9.0",
 		"nodemon": "^2.0.20",
 		"slugify": "^1.6.5",
+		"socket.io": "^4.6.0",
 		"ssl-commerz-node": "^1.0.4"
 	}
 }
