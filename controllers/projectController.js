@@ -13,7 +13,6 @@ module.exports.createProject = async (req, res) => {
 
         const user = req.user;
 
-        console.log('Images: ', image);
 
         // upload images to cloudinary
         const uploadedImages = await Promise.all(images.map(async (image) => {
@@ -24,7 +23,6 @@ module.exports.createProject = async (req, res) => {
         }));
 
 
-        console.log("Uploaded Images: ", uploadedImages);
 
         // create new project
         const project = new Project({
@@ -41,7 +39,6 @@ module.exports.createProject = async (req, res) => {
         return res.status(200).json({message: `Project created successfully!`, project});
 
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }

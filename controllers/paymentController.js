@@ -103,8 +103,6 @@ module.exports.paymentIpn = async (req, res) => {
         const order = await Order.findOneAndUpdate({ transactionId: trans_id }, { status: 'in progress'}, { new: true }).populate('service').populate('user', '-password');
         global.io.emit('newOrder', order);
 
-        console.log(order);
-
         // get a user a admin user from the database
         const admin = await User.findOne({ role: 'admin' });
 
@@ -113,7 +111,7 @@ module.exports.paymentIpn = async (req, res) => {
             recipient: admin._id,
             sender: order.user,
             type: 'order',
-            link: `/admin/orders/${order._id}`,
+            link: `/account/history/${order._id}`,
             message: `New order created by ${order.user.firstName} ${order.user.lastName}`
         });
 

@@ -18,7 +18,6 @@ module.exports.createArticle = async (req, res) => {
         return res.status(200).json({message: 'Article has been added!', article});
 
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ message: err.message });
     }
 }
