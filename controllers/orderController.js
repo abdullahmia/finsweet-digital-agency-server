@@ -52,7 +52,8 @@ module.exports.updateOrder = async (req, res) => {
             await notification.save();
 
             // send notification & order to user via socket.io
-            global.io.emit('newNotification', { order, notification });
+            global.io.emit('newNotification', notification);
+            global.io.emit('updateOrder', order);
 
             res.status(200).json({ order, message: 'Order has been updated!'});
         } catch (error) {

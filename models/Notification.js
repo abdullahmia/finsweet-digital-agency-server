@@ -22,7 +22,6 @@ const notificationSchema = new Schema({
     link: {
         type: String
     },
-
     message: {
         type: String,
         required: true

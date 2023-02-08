@@ -5,9 +5,8 @@ const Service = require("../models/Service");
 const { genarateTransactionId } = require("../utils/utils");
 const PaymentSession = SSLCommerz.PaymentSession;
 require("dotenv").config();
-
-
-
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 
 module.exports.initPayment = async (req, res) => {
@@ -102,6 +101,25 @@ module.exports.paymentIpn = async (req, res) => {
     const trans_id = payment['tran_id'];
     if (payment['status'] === 'VALID') {
         const order = await Order.findOneAndUpdate({ transactionId: trans_id }, { status: 'in progress'}, { new: true });
+        global.io.emit('newOrder', order);
+
+        console.log(order);
+
+        // get a user a admin user from the database
+        const admin = await User.findOne({ role: 'admin' });
+
+        // create a notification for the admin with order created
+        const notification = new Notification({
+            recipient: admin._id,
+            sender: order.user,
+            type: 'order',
+            link: `/admin/orders/${order._id}`,
+            message: `New order created by ${order.user.firstName} ${order.user.lastName}`
+        });
+
+        await notification.save();
+        global.io.emit('newNotification', notification);
+
     } else {
         await Order.findOneAndDelete({transactionId: trans_id});
     }
