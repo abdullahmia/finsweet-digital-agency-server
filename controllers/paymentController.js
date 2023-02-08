@@ -100,7 +100,7 @@ module.exports.paymentIpn = async (req, res) => {
     const payment = new Payment(req.body);
     const trans_id = payment['tran_id'];
     if (payment['status'] === 'VALID') {
-        const order = await Order.findOneAndUpdate({ transactionId: trans_id }, { status: 'in progress'}, { new: true });
+        const order = await Order.findOneAndUpdate({ transactionId: trans_id }, { status: 'in progress'}, { new: true }).populate('service').populate('user', '-password');
         global.io.emit('newOrder', order);
 
         console.log(order);
