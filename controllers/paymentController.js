@@ -112,7 +112,7 @@ module.exports.paymentIpn = async (req, res) => {
             sender: order.user,
             type: 'order',
             link: `/account/history/${order._id}`,
-            message: `New order created by ${order.user.firstName} ${order.user.lastName}`
+            message: `${order.user.firstName} ${order.user.lastName} has placed a new order.`
         });
 
         await notification.save();
