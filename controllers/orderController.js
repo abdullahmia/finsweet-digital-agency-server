@@ -16,8 +16,13 @@ exports.getUserOrders = async (req, res) => {
 // get all orders
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find({}).populate("user", "id name").populate("service").sort('-createdAt');
-        res.status(200).json(orders);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const total = await Order.countDocuments();
+        const totalPages = Math.ceil(total / limit);
+        const orders = await Order.find({}).skip(skip).limit(limit).populate("user", "id name").populate("service").sort('-createdAt');
+        res.status(200).json({orders, totalPages});
     } catch (error) {
         return res.status(500).json({ msg: err.message })
     }
