@@ -7,6 +7,8 @@ const PaymentSession = SSLCommerz.PaymentSession;
 require("dotenv").config();
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const sendMail = require("../lib/mailer/mailer");
+const { ServicePurchaseEmail } = require("../lib/mailer/themes");
 
 
 module.exports.initPayment = async (req, res) => {
@@ -117,6 +119,9 @@ module.exports.paymentIpn = async (req, res) => {
 
         await notification.save();
         global.io.emit('newNotification', notification);
+
+        // send email to purchased user
+        await sendMail(order.user.email, 'Order Placed', ServicePurchaseEmail({name: order.service.name, price: order.service.price, order: order._id}))
 
     } else {
         await Order.findOneAndDelete({transactionId: trans_id});
