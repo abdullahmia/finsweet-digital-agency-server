@@ -121,7 +121,7 @@ module.exports.paymentIpn = async (req, res) => {
         global.io.emit('newNotification', notification);
 
         // send email to purchased user
-        await sendMail(order.user.email, 'Order Placed', ServicePurchaseEmail({name: order.service.name, price: order.service.price, order: order._id}))
+        await sendMail(order.user.email, 'Order Placed', ServicePurchaseEmail({userName: order.user.firstName + order.user.lastName, name: order.service.name, price: order.service.price, order: order._id}))
 
     } else {
         await Order.findOneAndDelete({transactionId: trans_id});
