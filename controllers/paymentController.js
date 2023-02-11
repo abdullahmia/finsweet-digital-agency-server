@@ -120,9 +120,6 @@ module.exports.paymentIpn = async (req, res) => {
         await notification.save();
         global.io.emit('newNotification', notification);
 
-        console.log(order.service);
-        console.log(order.user);
-
         // // send email to purchased user
         await sendMail(order.user.email, 'Order Placed', ServicePurchaseEmail({userName: order.user.firstName + order.user.lastName, name: order.service.name, price: order.service.price, order: order._id}))
 

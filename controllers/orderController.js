@@ -1,6 +1,8 @@
 const Order = require("../models/Order");
 const Payment = require('../models/Payment');
 const Notification = require('../models/Notification');
+const { OrderUpdateEmail } = require("../lib/mailer/themes")
+const sendMail = require("../lib/mailer/mailer")
 
 // get user orders
 exports.getUserOrders = async (req, res) => {
@@ -50,7 +52,7 @@ module.exports.updateOrder = async (req, res) => {
         const orderId = req.params.id;
 
         try {
-            const order = await Order.findOneAndUpdate({ _id: orderId }, {...req.body}, { new: true });
+            const order = await Order.findOneAndUpdate({ _id: orderId }, {...req.body}, { new: true }).populate('service').populate('user', '-password');
 
             // add notification data to the database
             const notification = new Notification({ recipient: order.user._id, type: 'order', message: `Your order has been ${order.status}`, link: `/account/history/${order._id}`});
@@ -59,6 +61,9 @@ module.exports.updateOrder = async (req, res) => {
             // send notification & order to user via socket.io
             global.io.emit('newNotification', notification);
             global.io.emit('updateOrder', order);
+            console.log('Order: ', order.user)
+            // send email to user about order update
+            await sendMail(order.user.email, 'Order Update', OrderUpdateEmail({name: order.user.name, id: order._id, status: order.status}))
 
             res.status(200).json({ order, message: 'Order has been updated!'});
         } catch (error) {
