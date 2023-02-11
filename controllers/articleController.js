@@ -1,6 +1,7 @@
 const { ArticleCategory } = require("../models/Categories");
 const cloudinary = require('../lib/cloudinary');
 const Article = require('../models/Article');
+const Comment = require("../models/Comment");
 
 
 module.exports.createArticle = async (req, res) => {
@@ -47,7 +48,8 @@ module.exports.getArticle = async (req, res) => {
         if (!article) {
             return res.status(404).json('Not Found');
         }
-        return res.status(200).json(article);
+        const comments = await Comment.find({article: article._id}).sort('-createdAt');
+        return res.status(200).json({article, comments});
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
